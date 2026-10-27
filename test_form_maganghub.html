@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulasi Form Sertifikasi MagangHub Kemnaker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 16px;
+    }
+    .header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .header p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .group-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .helper-text {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .split-row {
+      display: flex;
+      gap: 12px;
+    }
+    .split-col {
+      flex: 1;
+    }
+    .split-sublabel {
+      font-size: 12px;
+      color: #475569;
+      margin-bottom: 4px;
+      display: block;
+      font-weight: 500;
+    }
+    /* Dropzone file upload area */
+    .dropzone-box {
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 24px 16px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      position: relative;
+    }
+    .dropzone-box:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+    .dropzone-icon {
+      font-size: 32px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .dropzone-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .dropzone-desc {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    .btn-submit {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 16px;
+    }
+    .btn-submit:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Tambah Sertifikasi</h2>
+      <p>Lengkapi informasi sertifikasi kompetensi Anda untuk melengkapi profil MagangHub Kemnaker.</p>
+    </div>
+
+    <form id="magangForm" onsubmit="event.preventDefault(); alert('Formulir berhasil diperiksa dan disimpan!');">
+      <!-- 1. Nama Sertifikasi -->
+      <div class="form-group">
+        <label class="group-label" for="certName">Nama Sertifikasi</label>
+        <input
+          type="text"
+          id="certName"
+          name="certName"
+          class="form-control"
+          placeholder="Contoh: Junior Web Developer, TOEFL ITP, Cloud Practitioner"
+          required
+        >
+      </div>
+
+      <!-- 2. Lembaga Sertifikasi (Combobox/Dropdown) -->
+      <div class="form-group">
+        <label class="group-label" for="issuer">Lembaga sertifikasi</label>
+        <select id="issuer" name="issuer" class="form-control" required>
+          <option value="" disabled selected>Pilih lembaga sertifikasi</option>
+          <option value="BNSP">BNSP (Badan Nasional Sertifikasi Profesi)</option>
+          <option value="Kemnaker">Kementerian Ketenagakerjaan RI</option>
+          <option value="Google">Google / Coursera</option>
+          <option value="Dicoding">Dicoding Indonesia</option>
+          <option value="Microsoft">Microsoft</option>
+          <option value="AWS">Amazon Web Services (AWS)</option>
+          <option value="Cisco">Cisco Networking Academy</option>
+          <option value="ETS">ETS (Educational Testing Service / TOEFL)</option>
+          <option value="Lainnya">Lembaga Lainnya / Perguruan Tinggi</option>
+        </select>
+        <div class="helper-text">
+          <span>ⓘ</span> Sebutkan lembaga yang menerbitkan sertifikasi ini untuk memperjelas kredibilitasnya.
+        </div>
+      </div>
+
+      <!-- 3. Nilai (Desimal dengan Koma) -->
+      <div class="form-group">
+        <label class="group-label" for="score">Nilai</label>
+        <input
+          type="text"
+          id="score"
+          name="score"
+          class="form-control"
+          placeholder="Tambahkan , apabila desimal"
+        >
+        <div class="helper-text">
+          <span>ⓘ</span> Masukkan nilai atau skor yang kamu peroleh dari sertifikasi ini, jika tersedia.
+        </div>
+      </div>
+
+      <!-- 4. Tanggal Dikeluarkan (Split Field: Bulan & Tahun) -->
+      <div class="form-group">
+        <label class="group-label">Tanggal dikeluarkan</label>
+        <div class="split-row">
+          <div class="split-col">
+            <span class="split-sublabel">Bulan</span>
+            <select id="issueMonth" name="issueMonth" class="form-control" required>
+              <option value="" disabled selected>Bulan</option>
+              <option value="Januari">Januari</option>
+              <option value="Februari">Februari</option>
+              <option value="Maret">Maret</option>
+              <option value="April">April</option>
+              <option value="Mei">Mei</option>
+              <option value="Juni">Juni</option>
+              <option value="Juli">Juli</option>
+              <option value="Agustus">Agustus</option>
+              <option value="September">September</option>
+              <option value="Oktober">Oktober</option>
+              <option value="November">November</option>
+              <option value="Desember">Desember</option>
+            </select>
+          </div>
+          <div class="split-col">
+            <span class="split-sublabel">Tahun</span>
+            <input
+              type="text"
+              id="issueYear"
+              name="issueYear"
+              class="form-control"
+              placeholder="Tahun"
+              maxlength="4"
+              required
+            >
+          </div>
+        </div>
+        <div class="helper-text">
+          <span>ⓘ</span> Tanggal ini menunjukkan kapan sertifikasi resmi diterbitkan.
+        </div>
+      </div>
+
+      <!-- 5. Tanggal Berakhir (Split Field: Bulan & Tahun) -->
+      <div class="form-group">
+        <label class="group-label">Tanggal berakhir</label>
+        <div class="split-row">
+          <div class="split-col">
+            <span class="split-sublabel">Bulan</span>
+            <select id="expiryMonth" name="expiryMonth" class="form-control">
+              <option value="" selected>Bulan</option>
+              <option value="Januari">Januari</option>
+              <option value="Februari">Februari</option>
+              <option value="Maret">Maret</option>
+              <option value="April">April</option>
+              <option value="Mei">Mei</option>
+              <option value="Juni">Juni</option>
+              <option value="Juli">Juli</option>
+              <option value="Agustus">Agustus</option>
+              <option value="September">September</option>
+              <option value="Oktober">Oktober</option>
+              <option value="November">November</option>
+              <option value="Desember">Desember</option>
+            </select>
+          </div>
+          <div class="split-col">
+            <span class="split-sublabel">Tahun</span>
+            <input
+              type="text"
+              id="expiryYear"
+              name="expiryYear"
+              class="form-control"
+              placeholder="Tahun"
+              maxlength="4"
+            >
+          </div>
+        </div>
+        <div class="helper-text">
+          <span>ⓘ</span> Isi jika sertifikasi memiliki masa berlaku.
+        </div>
+      </div>
+
+      <!-- 6. Dokumen Sertifikasi (Dropzone & Input File) -->
+      <div class="form-group">
+        <label class="group-label">Dokumen sertifikasi</label>
+        <div class="dropzone-box" onclick="document.getElementById('fileCert').click()">
+          <div class="dropzone-icon">☁️</div>
+          <div class="dropzone-title">Klik untuk meng-upload file kesini</div>
+          <div class="dropzone-desc">Format jpg, jpeg, png, pdf • ukuran maks 5MB</div>
+          <input
+            type="file"
+            id="fileCert"
+            name="fileCert"
+            accept=".jpg,.jpeg,.png,.pdf"
+            style="display: none;"
+            onchange="if(this.files[0]) this.parentElement.querySelector('.dropzone-title').innerText = '✓ ' + this.files[0].name"
+          >
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn-submit">Simpan Sertifikasi</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MagangHub AI Auto-Filler</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="lib/pdf.min.js"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <img src="icons/icon32.png" alt="Logo" class="brand-icon">
+      <div>
+        <h1 class="brand-title">MagangHub Auto-Filler</h1>
+        <div class="brand-subtitle">Powered by 9Router AI</div>
+      </div>
+    </div>
+    <div id="statusPill" class="status-pill">
+      <span class="status-dot"></span>
+      <span id="statusText">Memeriksa...</span>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav">
+    <button id="tabBtnMain" class="tab-btn active" data-tab="tabMain">🚀 Auto-Filler</button>
+    <button id="tabBtnSettings" class="tab-btn" data-tab="tabSettings">⚙️ Pengaturan 9Router</button>
+  </nav>
+
+  <!-- Main Auto-Filler Tab -->
+  <main id="tabMain" class="tab-pane active">
+    <!-- File Upload Section -->
+    <section class="card">
+      <div class="card-title">
+        <span>📄 Dokumen Sertifikat / CV</span>
+      </div>
+
+      <div id="dropzone" class="dropzone">
+        <div class="dropzone-icon">📥</div>
+        <div class="dropzone-text">Pilih atau Tarik File ke Sini</div>
+        <div class="dropzone-subtext">Format: PDF, PNG, JPG, JPEG (Maks. 5MB)</div>
+        <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" style="display: none;">
+      </div>
+
+      <div id="filePreview" class="file-preview">
+        <div id="previewThumb" class="preview-thumb">📄</div>
+        <div class="preview-details">
+          <div id="previewName" class="preview-name">nama_file.pdf</div>
+          <div id="previewMeta" class="preview-meta">0 KB</div>
+        </div>
+        <button id="btnRemoveFile" class="btn-remove-file" title="Hapus File">&times;</button>
+      </div>
+    </section>
+
+    <!-- Options Section -->
+    <section class="card">
+      <div class="card-title">
+        <span>⚙️ Opsi Ekstraksi & Injeksi</span>
+      </div>
+
+      <label class="option-row">
+        <input type="checkbox" id="chkVisionMode" checked>
+        <div>
+          <div class="option-text">👁️ Gunakan Vision Mode (Multimodal)</div>
+          <div class="option-desc">Kirim gambar halaman dokumen ke 9Router untuk membaca sertifikat hasil scan/desain visual.</div>
+        </div>
+      </label>
+
+      <label class="option-row">
+        <input type="checkbox" id="chkAutoAttach" checked>
+        <div>
+          <div class="option-text">📎 Otomatis Lampirkan File ke Form</div>
+          <div class="option-desc">Menyuntikkan file ini langsung ke kolom upload "Dokumen sertifikasi" di formulir.</div>
+        </div>
+      </label>
+    </section>
+
+    <!-- Optional Prompt -->
+    <section class="card">
+      <div class="card-title">
+        <span>💬 Instruksi Tambahan (Opsional)</span>
+      </div>
+      <textarea
+        id="txtUserPrompt"
+        class="form-textarea"
+        placeholder="Contoh: Ambil data dari sertifikat ini. Jika tidak ada tanggal berakhir, bagian Tanggal Berakhir dikosongkan saja."
+      ></textarea>
+    </section>
+
+    <!-- Action Button & Progress -->
+    <div id="progressBox" class="progress-box">
+      <div class="spinner"></div>
+      <span id="progressText">Memproses...</span>
+    </div>
+
+    <button id="btnProcess" class="btn btn-primary" disabled>
+      <span>🚀 Scan Dokumen & Isi Form via 9Router</span>
+    </button>
+
+    <!-- Document Summary Section (Hidden by default) -->
+    <section id="summarySection" class="card" style="display: none; margin-top: 14px;">
+      <div class="card-title">
+        <span>📋 Ringkasan Dokumen yang Terbaca</span>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-item full-width">
+          <div class="summary-label">Nama Sertifikasi / Dokumen</div>
+          <div id="sumDocTitle" class="summary-val">-</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Lembaga Penerbit</div>
+          <div id="sumIssuer" class="summary-val">-</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Nilai / Skor</div>
+          <div id="sumScore" class="summary-val">-</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Tanggal Diterbitkan</div>
+          <div id="sumIssueDate" class="summary-val">-</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Tanggal Berakhir</div>
+          <div id="sumExpiryDate" class="summary-val">-</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Review Section (Hidden by default) -->
+    <section id="reviewSection" class="card" style="display: none;">
+      <div class="card-title">
+        <span>🔍 Hasil Pengisian Kolom Form</span>
+        <span id="reviewCountBadge" class="badge-tag badge-high">0 Kolom</span>
+      </div>
+      <div id="reviewList" class="review-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings Tab -->
+  <main id="tabSettings" class="tab-pane">
+    <section class="card">
+      <div class="card-title">
+        <span>🔌 Konfigurasi 9Router Gateway</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cfgEndpoint">Endpoint URL</label>
+        <input
+          type="text"
+          id="cfgEndpoint"
+          class="form-input"
+          placeholder="http://localhost:20128/v1/chat/completions"
+          value="http://localhost:20128/v1/chat/completions"
+        >
+        <div class="option-desc" style="margin-top: 4px;">Default standar 9Router: <code>http://localhost:20128/v1/chat/completions</code></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cfgApiKey">API Key 9Router</label>
+        <input
+          type="password"
+          id="cfgApiKey"
+          class="form-input"
+          placeholder="sk-..."
+          value=""
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cfgModel">Nama Model / Model Combo</label>
+        <input
+          type="text"
+          id="cfgModel"
+          class="form-input"
+          list="modelPresets"
+          placeholder="AdheRouter"
+          value="AdheRouter"
+        >
+        <datalist id="modelPresets">
+          <option value="AdheRouter">AdheRouter (Combo Aktif 9Router Anda - Multimodal Cepat)</option>
+          <option value="ag/gemini-3.8-flash-high">ag/gemini-3.8-flash-high (Gemini Vision)</option>
+          <option value="ag/claude-sonnet-4-6">ag/claude-sonnet-4-6 (Claude Vision)</option>
+          <option value="cbai/glm-5v-turbo">cbai/glm-5v-turbo (GLM Vision)</option>
+          <option value="auto">auto</option>
+        </datalist>
+      </div>
+          <option value="gpt-4o">gpt-4o</option>
+          <option value="qwen2.5-vl">qwen2.5-vl</option>
+          <option value="deepseek-chat">deepseek-chat</option>
+        </datalist>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 14px;">
+        <button id="btnTestConn" class="btn btn-secondary">
+          <span>⚡ Tes Koneksi</span>
+        </button>
+        <button id="btnSaveSettings" class="btn btn-primary">
+          <span>💾 Simpan</span>
+        </button>
+      </div>
+
+      <div id="testConnResult" style="margin-top: 10px; font-size: 11px; display: none;"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">
+        <span>ℹ️ Panduan Koneksi 9Router</span>
+      </div>
+      <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+        <p>1. Pastikan aplikasi <strong>9Router</strong> sudah berjalan di komputer Anda pada port <code>20128</code>.</p>
+        <p style="margin-top: 6px;">2. Jika menggunakan model multimodal seperti Gemini atau GPT-4o di 9Router, fitur <em>Vision Mode</em> akan otomatis membaca sertifikat berbasis gambar/scan.</p>
+        <p style="margin-top: 6px;">3. Klik tombol <strong>Tes Koneksi</strong> di atas untuk memastikan ekstensi dapat berkomunikasi lancar dengan 9Router.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg">Notifikasi</span>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
